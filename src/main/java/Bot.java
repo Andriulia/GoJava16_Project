@@ -1,6 +1,7 @@
 //import lombok.extern.slf4j.Slf4j;
 
 import com.vdurmont.emoji.EmojiParser;
+import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -13,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.generics.BotSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,10 @@ public class Bot extends TelegramLongPollingBot {
                 sendMsg(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
             } else if (update.getMessage().getText().equals("/STOP")) {
                 sendMsg(message, "\uD83D\uDED1", null);
+//                BotSession session = ApiContext.getInstance(BotSession.class);
+//                session.setToken(getBotToken());
+//                session.setOptions(getOptions());
+//                session.stop();
             }
 
         } else if (update.hasCallbackQuery()) {
@@ -81,10 +87,10 @@ public class Bot extends TelegramLongPollingBot {
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
-        firstRow.add(new InlineKeyboardButton().setText("Java").setCallbackData("java"));
-        secondRow.add(new InlineKeyboardButton().setText("HTML+CSS").setCallbackData("html+css"));
-        secondRow.add(new InlineKeyboardButton().setText("ReactJS").setCallbackData("reactjs"));
-        secondRow.add(new InlineKeyboardButton().setText("NodeJS").setCallbackData("nodejs"));
+        firstRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(0)).setCallbackData("0"));
+        secondRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(1)).setCallbackData("1"));
+        secondRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(2)).setCallbackData("2"));
+        secondRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(3)).setCallbackData("3"));
         rowsInline.add(firstRow);
         rowsInline.add(secondRow);
 
