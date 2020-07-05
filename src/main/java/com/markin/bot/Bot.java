@@ -1,7 +1,8 @@
+package com.markin.bot;
+
 //import lombok.extern.slf4j.Slf4j;
 
 import com.vdurmont.emoji.EmojiParser;
-import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -13,8 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import org.telegram.telegrambots.meta.generics.BotSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,10 +86,14 @@ public class Bot extends TelegramLongPollingBot {
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
-        firstRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(0)).setCallbackData("0"));
-        secondRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(1)).setCallbackData("1"));
-        secondRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(2)).setCallbackData("2"));
-        secondRow.add(new InlineKeyboardButton().setText(Json.readFromLanguagesJson(3)).setCallbackData("3"));
+        List<JsonParser> jsonData = DataParser.readFromJson("src\\main\\resources\\languages.json");
+
+        for (JsonParser data : jsonData) {
+            InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId());
+            if (Integer.parseInt(data.getId()) <= jsonData.size()/2){
+                firstRow.add(button);
+            } else secondRow.add(button);
+        }
         rowsInline.add(firstRow);
         rowsInline.add(secondRow);
 
