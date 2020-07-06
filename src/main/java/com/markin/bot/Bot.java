@@ -4,13 +4,13 @@ package com.markin.bot;
 
 import com.vdurmont.emoji.EmojiParser;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -23,16 +23,16 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
         if (update.hasMessage() && update.getMessage().hasText()) {
+            Message message = update.getMessage();
             if (update.getMessage().getText().equals("/start")) {
-                sendMsg(message, EmojiParser.parseToUnicode(":wave:"), mainKeys());
-                sendMsg(message, "Пора выбирать " + EmojiParser.parseToUnicode(":blush: :point_down:"),
-                        languagesInLine());
+                sendMessage(message, /*null*/ EmojiParser.parseToUnicode(":wave:"), mainKeys());
+                sendMessage(message, "Пора выбирать " + EmojiParser.parseToUnicode(":blush: :point_down:"),
+                        inLineKeyboard("languages"));
             } else if (update.getMessage().getText().equals("/Назад")) {
-                sendMsg(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
+                sendMessage(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
             } else if (update.getMessage().getText().equals("/STOP")) {
-                sendMsg(message, "\uD83D\uDED1", null);
+                sendMessage(message, "\uD83D\uDED1", null);
 //                BotSession session = ApiContext.getInstance(BotSession.class);
 //                session.setToken(getBotToken());
 //                session.setOptions(getOptions());
@@ -40,23 +40,44 @@ public class Bot extends TelegramLongPollingBot {
             }
 
         } else if (update.hasCallbackQuery()) {
+            Message message = update.getCallbackQuery().getMessage();
+            if (update.getCallbackQuery().getData().equals("1")) {
+                updateMessage(message, "Категории Java:", inLineKeyboard("themes"));
+            } else {
+                updateMessage(message, "А только Java.  \uD83D\uDE42",
+                        inLineKeyboard("languages"));
+            }
         }
 
     }
 
-    private void sendMsg(Message message, String text, ReplyKeyboard keyboard) {
+    private void sendMessage(Message message, String text, ReplyKeyboard keyboard) {
 
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(message.getChatId().toString());
+        SendMessage sendMessage = new SendMessage()
+                .enableMarkdown(true)
+                .setChatId(message.getChatId().toString())
+                .setText(text)
+                .setReplyMarkup(keyboard);
 //        sendMessage.setReplyToMessageId(message.getMessageId());
-        sendMessage.setText(text);
 
         try {
 
-            sendMessage.setReplyMarkup(keyboard);
             execute(sendMessage);
 
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateMessage(Message message, String text, ReplyKeyboard keyboard) {
+
+        EditMessageText newMessage = new EditMessageText()
+                .setChatId(message.getChatId())
+                .setMessageId(Math.toIntExact(message.getMessageId()))
+                .setText(text)
+                .setReplyMarkup((InlineKeyboardMarkup) keyboard);
+        try {
+            execute(newMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -72,8 +93,8 @@ public class Bot extends TelegramLongPollingBot {
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         KeyboardRow keyboardSecondRow = new KeyboardRow();
 
-        keyboardFirstRow.add(new KeyboardButton("/Назад"));
-        keyboardSecondRow.add(new KeyboardButton("/STOP"));
+        keyboardFirstRow.add("/Назад");
+        keyboardSecondRow.add("/STOP");
 
         keyboardRowList.add(keyboardFirstRow);
         keyboardRowList.add(keyboardSecondRow);
@@ -82,11 +103,17 @@ public class Bot extends TelegramLongPollingBot {
         return replyKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup languagesInLine() {
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+    private InlineKeyboardMarkup inLineKeyboard(String type) {
+        List<List<InlineKeyboardButton>> inLineKeyboard = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
-        List<JsonParser> jsonData = DataParser.readFromJson("src\\main\\resources\\languages.json");
+        String pathToJson = null;
+        if (type.equals("languages")) {
+            pathToJson = "src\\main\\resources\\languages.json";
+        } else if (type.equals("themes")) {
+            pathToJson = "src\\main\\resources\\themes.json";
+        }
+            List<JsonParser> jsonData = DataParser.readFromJson(pathToJson);
 
         for (JsonParser data : jsonData) {
             InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId());
@@ -94,11 +121,11 @@ public class Bot extends TelegramLongPollingBot {
                 firstRow.add(button);
             } else secondRow.add(button);
         }
-        rowsInline.add(firstRow);
-        rowsInline.add(secondRow);
+        inLineKeyboard.add(firstRow);
+        inLineKeyboard.add(secondRow);
 
         InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
-        markupKeyboard.setKeyboard(rowsInline);
+        markupKeyboard.setKeyboard(inLineKeyboard);
 
         return markupKeyboard;
     }
