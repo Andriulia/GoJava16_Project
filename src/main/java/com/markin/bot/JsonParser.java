@@ -7,5 +7,6 @@ public class JsonParser {
 
     String name;
     String id;
+    String categoriesPath;
 
 }

@@ -28,7 +28,7 @@ public class Bot extends TelegramLongPollingBot {
             if (update.getMessage().getText().equals("/start")) {
                 sendMessage(message, /*null*/ EmojiParser.parseToUnicode(":wave:"), mainKeys());
                 sendMessage(message, "Пора выбирать " + EmojiParser.parseToUnicode(":blush: :point_down:"),
-                        inLineKeyboard("languages"));
+                        inLineKeyboard("src\\main\\resources\\languages.json"));
             } else if (update.getMessage().getText().equals("/Назад")) {
                 sendMessage(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
             } else if (update.getMessage().getText().equals("/STOP")) {
@@ -41,15 +41,22 @@ public class Bot extends TelegramLongPollingBot {
 
         } else if (update.hasCallbackQuery()) {
             Message message = update.getCallbackQuery().getMessage();
-            if (update.getCallbackQuery().getData().equals("1")) {
-                updateMessage(message, "Категории Java:", inLineKeyboard("themes"));
-            } else {
-                updateMessage(message, "А только Java.  \uD83D\uDE42",
-                        inLineKeyboard("languages"));
+            String incomeCallback = update.getCallbackQuery().getData();
+            List<JsonParser> jsonData = DataParser.readFromJson("src\\main\\resources\\languages.json");
+            for (JsonParser data : jsonData) {
+                if (incomeCallback.equals(data.getId())) {
+                    if (data.getCategoriesPath() == null) {
+                        System.out.println("-");
+                        updateMessage(message, "А только Java. \uD83D\uDE42", null);
+                    } else {
+                        System.out.println("+");
+                        updateMessage(message, "Категории " + data.getName() + ":", inLineKeyboard(data.getCategoriesPath()));
+                }
             }
         }
-
     }
+
+}
 
     private void sendMessage(Message message, String text, ReplyKeyboard keyboard) {
 
@@ -103,21 +110,18 @@ public class Bot extends TelegramLongPollingBot {
         return replyKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup inLineKeyboard(String type) {
+    private InlineKeyboardMarkup inLineKeyboard(String pathToJson) {
         List<List<InlineKeyboardButton>> inLineKeyboard = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
-        String pathToJson = null;
-        if (type.equals("languages")) {
-            pathToJson = "src\\main\\resources\\languages.json";
-        } else if (type.equals("themes")) {
-            pathToJson = "src\\main\\resources\\themes.json";
+        List<JsonParser> jsonData = DataParser.readFromJson(pathToJson);
+        if (pathToJson.isEmpty()) {
+            return null;
         }
-            List<JsonParser> jsonData = DataParser.readFromJson(pathToJson);
 
         for (JsonParser data : jsonData) {
             InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId());
-            if (Integer.parseInt(data.getId()) <= jsonData.size()/2){
+            if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
                 firstRow.add(button);
             } else secondRow.add(button);
         }
