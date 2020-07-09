@@ -5,8 +5,9 @@ import lombok.Data;
 @Data
 public class JsonParser {
 
-    String name;
     String id;
+    String name;
+    String callback;
     String categoriesPath;
 
 }

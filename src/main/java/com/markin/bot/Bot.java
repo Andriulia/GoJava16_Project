@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,39 +25,51 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            Message message = update.getMessage();
-            if (update.getMessage().getText().equals("/start")) {
+            incomeMessageHandler(update.getMessage());
+        } else if (update.hasCallbackQuery()) {
+            incomeCallbackHandler(update.getCallbackQuery().getMessage(), update.getCallbackQuery().getData());
+        }
+    }
+
+    private void incomeMessageHandler(Message message) {
+        String messageText = message.getText();
+        switch (messageText) {
+            case "/start":
                 sendMessage(message, /*null*/ EmojiParser.parseToUnicode(":wave:"), mainKeys());
                 sendMessage(message, "Пора выбирать " + EmojiParser.parseToUnicode(":blush: :point_down:"),
                         inLineKeyboard("src\\main\\resources\\languages.json"));
-            } else if (update.getMessage().getText().equals("/Назад")) {
-                sendMessage(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
-            } else if (update.getMessage().getText().equals("/STOP")) {
-                sendMessage(message, "\uD83D\uDED1", null);
+                break;
+        case "/Назад":
+            sendMessage(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
+                break;
+        case "/STOP":
+            sendMessage(message, "\uD83D\uDED1", null);
 //                BotSession session = ApiContext.getInstance(BotSession.class);
 //                session.setToken(getBotToken());
 //                session.setOptions(getOptions());
 //                session.stop();
-            }
-
-        } else if (update.hasCallbackQuery()) {
-            Message message = update.getCallbackQuery().getMessage();
-            String incomeCallback = update.getCallbackQuery().getData();
-            List<JsonParser> jsonData = DataParser.readFromJson("src\\main\\resources\\languages.json");
-            for (JsonParser data : jsonData) {
-                if (incomeCallback.equals(data.getId())) {
-                    if (data.getCategoriesPath() == null) {
-                        System.out.println("-");
-                        updateMessage(message, "А только Java. \uD83D\uDE42", null);
-                    } else {
-                        System.out.println("+");
-                        updateMessage(message, "Категории " + data.getName() + ":", inLineKeyboard(data.getCategoriesPath()));
-                }
-            }
+                break;
         }
     }
 
-}
+    private void incomeCallbackHandler(Message incomeMessage, String incomeCallback) {
+        List<JsonParser> jsonData = DataParser.readFromJson("src\\main\\resources\\languages.json");
+        String[] callback = incomeCallback.split("-");
+        String categories = "src\\main\\resources\\ThemesCategories\\" + callback[2] + "Categories.json";
+        File f = new File(categories);
+        for (JsonParser data : jsonData) {
+//            if (callback[0].equals(data.getId())) {
+                switch (callback[1]) {
+                    case "languages":
+                        if (f.exists() && !f.isDirectory()) {
+                            updateMessage(incomeMessage, "Категории " + data.getName() + ":", inLineKeyboard(categories));
+                        } else {
+                            updateMessage(incomeMessage, "⛔", null);
+                        }
+                }
+//            }
+        }
+    }
 
     private void sendMessage(Message message, String text, ReplyKeyboard keyboard) {
 
@@ -76,13 +89,13 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    private void updateMessage(Message message, String text, ReplyKeyboard keyboard) {
+    private void updateMessage(Message message, String text, InlineKeyboardMarkup keyboard) {
 
         EditMessageText newMessage = new EditMessageText()
                 .setChatId(message.getChatId())
                 .setMessageId(Math.toIntExact(message.getMessageId()))
                 .setText(text)
-                .setReplyMarkup((InlineKeyboardMarkup) keyboard);
+                .setReplyMarkup(keyboard);
         try {
             execute(newMessage);
         } catch (TelegramApiException e) {
@@ -120,7 +133,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
         for (JsonParser data : jsonData) {
-            InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId());
+            InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
             if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
                 firstRow.add(button);
             } else secondRow.add(button);

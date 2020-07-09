@@ -1,4 +1,4 @@
-[{"id": "1", "name": "Java", "categoriesPath": "src\\main\\resources\\ThemesCategories\\javaCategories.json"},
-  {"id": "2", "name": "HTML+CSS", "categoriesPath": null},
-  {"id": "3", "name": "ReactJS", "categoriesPath": null},
-  {"id": "4", "name": "NodeJS", "categoriesPath": null}]
+[ {"id": "1", "callback": "languages-java", "name": "Java"},
+  {"id": "2", "callback": "languages-html", "name": "HTML+CSS"},
+  {"id": "3", "callback": "languages-reactjs", "name": "ReactJS"},
+  {"id": "4", "callback": "languages-nodejs", "name": "NodeJS"} ]
