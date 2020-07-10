@@ -1,0 +1,49 @@
+[
+  {"id": "1", "javaCategory": "1", "question": "Что такое ООП?"},
+  {"id": "2", "javaCategory": "1", "question": "Что такое объект?"},
+  {"id": "3", "javaCategory": "1", "question": "Какие два вида полиморфизма в Java вы знаете?"},
+  {"id": "4", "javaCategory": "1", "question": "Что такое инкапсуляция?"},
+  {"id": "5", "javaCategory": "1", "question": "Что такое абстракция?"},
+  {"id": "6", "javaCategory": "1", "question": "В чем преимущество ООП?"},
+  {"id": "7", "javaCategory": "1", "question": "В чем разница разница между композицией и агрегацией?"},
+  {"id": "8", "javaCategory": "1", "question": "Расшифруйте и объясните аббревиатуру S.O.L.I.D."},
+  {"id": "9", "javaCategory": "1", "question": "Объясните смысл паттерна MVC"},
+
+  {"id": "10", "javaCategory": "2", "question": "Какие есть модификаторы доступа в Java?"},
+  {"id": "11", "javaCategory": "2", "question": "Можно ли перегрузить статический метод?"},
+  {"id": "12", "javaCategory": "2", "question": "Что такое внутренние классы? Какие виды внутренних классов вы знаете?"},
+  {"id": "13", "javaCategory": "2", "question": "Что такое интерфейсы-маркеры? Какие интерфейсы-маркеры вы знаете?"},
+  {"id": "14", "javaCategory": "2", "question": "Какая разница между String, StringBuilder, StringBuffer?"},
+  {"id": "15", "javaCategory": "2", "question": "Какие виды потоков ввода-вывода есть в Java?"},
+  {"id": "16", "javaCategory": "2", "question": "Возможно ли при переопределении метода изменить модификатор доступа? Возвращаемый тип? Тип аргумента или количество? Имя аргументов? Порядок, количество или убрать секцию throws?"},
+  {"id": "17", "javaCategory": "2", "question": "Что такое Generics?"},
+  {"id": "18", "javaCategory": "2", "question": "Каким образом передаются переменные в методы, по значению или по ссылке?"},
+  {"id": "19", "javaCategory": "2", "question": "В чем отличие между поверхностным и глубоким клонированием?"},
+  {"id": "20", "javaCategory": "2", "question": "Чем отличаются слова final, finally, finalize?"},
+  {"id": "21", "javaCategory": "2", "question": "Что такое checked/unchecked exception?"},
+  {"id": "22", "javaCategory": "2", "question": "Опишите работу блока try-catch-finally"},
+  {"id": "23", "javaCategory": "2", "question": "Всегда ли выполняется блок finally?"},
+
+  {"id": "24", "javaCategory": "3", "question": "Какая разница между JDK, JVM, JRE?"},
+  {"id": "25", "javaCategory": "3", "question": "Что такое Heap и Stack память в Java?"},
+  {"id": "26", "javaCategory": "3", "question": "Как работает сборщик мусора в Java?"},
+  {"id": "27", "javaCategory": "3", "question": "Что такое классы-загрузчики (ClassLoader)?"},
+  {"id": "28", "javaCategory": "3", "question": "Объясните смысл понятия \"пул литералов\""},
+  {"id": "29", "javaCategory": "3", "question": "Можно ли \"вернуть\" строку в пул литералов?"},
+
+  {"id": "30", "javaCategory": "4", "question": "Что такое приведение типов? Какие виды приведения есть в Java?"},
+  {"id": "31", "javaCategory": "4", "question": "Какие примитивные типы есть в Java?"},
+  {"id": "32", "javaCategory": "4", "question": "Что такое Autoboxing?"},
+
+  {"id": "33", "javaCategory": "5", "question": "Какая связь между equals и hashCode?"},
+  {"id": "34", "javaCategory": "5", "question": "Чем отличается ArrayList от LinkedList?"},
+  {"id": "35", "javaCategory": "5", "question": "Дайте определение понятию iterator"},
+  {"id": "36", "javaCategory": "5", "question": "Что такое fail-fast поведение?"},
+  {"id": "37", "javaCategory": "5", "question": "Какая коллекция реализует дисциплину обслуживания FIFO?"},
+  {"id": "38", "javaCategory": "5", "question": "Какая коллекция реализует дисциплину обслуживания LIFO?"},
+  {"id": "39", "javaCategory": "5", "question": "Как перебрать все ключи Map, учитывая, что Map - не Iterable?"},
+  {"id": "40", "javaCategory": "5", "question": "Почему Map - это не Collection, в то время как List, Set являются Collection?"},
+  {"id": "41", "javaCategory": "5", "question": "Зачем для множеств enum-ов есть специальный Set? Что это за Set?"}
+
+
+]

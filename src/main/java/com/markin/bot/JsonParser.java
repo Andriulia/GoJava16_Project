@@ -8,6 +8,7 @@ public class JsonParser {
     String id;
     String name;
     String callback;
-    String categoriesPath;
+    String javaCategory;
+    String question;
 
 }

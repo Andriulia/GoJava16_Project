@@ -1,4 +1,6 @@
-[ {"id": "1", "callback": "languages-java", "name": "Java"},
+[
+  {"id": "1", "callback": "languages-java", "name": "Java"},
   {"id": "2", "callback": "languages-html", "name": "HTML+CSS"},
   {"id": "3", "callback": "languages-reactjs", "name": "ReactJS"},
-  {"id": "4", "callback": "languages-nodejs", "name": "NodeJS"} ]
+  {"id": "4", "callback": "languages-nodejs", "name": "NodeJS"}
+]
