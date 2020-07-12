@@ -1,8 +1,8 @@
 [
-  {"id": "1", "name": "ООП"},
-  {"id": "2", "name": "Классы и методы"},
-  {"id": "3", "name": "Устройство Java"},
-  {"id": "4", "name": "Примитивы"},
-  {"id": "5", "name": "Коллекции"},
-  {"id": "6", "name": "Многопоточность"}
+  {"id": "1", "callback": "categories-java-oop", "name": "ООП"},
+  {"id": "2", "callback": "categories-java-classesAndMethods", "name": "Классы и методы"},
+  {"id": "3", "callback": "categories-java-arrangementOfJava", "name": "Устройство Java"},
+  {"id": "4", "callback": "categories-java-primitives", "name": "Примитивы"},
+  {"id": "5", "callback": "categories-java-collections", "name": "Коллекции"},
+  {"id": "6", "callback": "categories-java-multithreading", "name": "Многопоточность"}
 ]

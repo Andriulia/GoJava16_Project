@@ -3,12 +3,9 @@ package com.markin.bot;
 import lombok.Data;
 
 @Data
-public class JsonParser {
+public class CategoriesJson extends DefaultJson {
 
-    String id;
     String name;
     String callback;
-    String javaCategory;
-    String question;
 
 }

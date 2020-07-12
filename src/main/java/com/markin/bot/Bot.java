@@ -16,6 +16,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +40,11 @@ public class Bot extends TelegramLongPollingBot {
                 sendMessage(message, "Пора выбирать " + EmojiParser.parseToUnicode(":blush: :point_down:"),
                         inLineKeyboard("src\\main\\resources\\languages.json"));
                 break;
-        case "/Назад":
-            sendMessage(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
+            case "/Назад":
+                sendMessage(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
                 break;
-        case "/STOP":
-            sendMessage(message, "\uD83D\uDED1", null);
+            case "/STOP":
+                sendMessage(message, "\uD83D\uDED1", null);
 //                BotSession session = ApiContext.getInstance(BotSession.class);
 //                session.setToken(getBotToken());
 //                session.setOptions(getOptions());
@@ -53,20 +54,27 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void incomeCallbackHandler(Message incomeMessage, String incomeCallback) {
-        List<JsonParser> jsonData = DataParser.readFromJson("src\\main\\resources\\languages.json");
+        List<LanguagesJson> languagesJson = JsonHandler.getLanguages();
         String[] callback = incomeCallback.split("-");
-        String categories = "src\\main\\resources\\ThemesCategories\\" + callback[2] + "Categories.json";
-        File f = new File(categories);
-        for (JsonParser data : jsonData) {
+        switch (callback[1]) {
+            case "languages":
+                for (LanguagesJson data : languagesJson) {
 //            if (callback[0].equals(data.getId())) {
-                switch (callback[1]) {
-                    case "languages":
-                        if (f.exists() && !f.isDirectory()) {
-                            updateMessage(incomeMessage, "Категории " + data.getName() + ":", inLineKeyboard(categories));
-                        } else {
-                            updateMessage(incomeMessage, "⛔", null);
-                        }
+                    File c = new File(JsonHandler.categories(callback[2]));
+                    if (c.exists() && !c.isDirectory()) {
+                        updateMessage(incomeMessage, "Категории " + data.getName() + ":", inLineKeyboard(JsonHandler.categories(callback[2])));
+                    } else {
+                        updateMessage(incomeMessage, "⛔", null);
+                    }
+                    break;
                 }
+                case "categories":
+                    if (JsonHandler.getQuestionsForCategory(callback[2], callback[3]).isEmpty()) {
+                        updateMessage(incomeMessage, "⛔", null);
+                        break;
+                    }
+                    updateMessage(incomeMessage, JsonHandler.getQuestionsForCategory(callback[2], callback[3]).get(0).getQuestion(), null);
+                    break;
 //            }
         }
     }
@@ -124,20 +132,42 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private InlineKeyboardMarkup inLineKeyboard(String pathToJson) {
+
         List<List<InlineKeyboardButton>> inLineKeyboard = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
-        List<JsonParser> jsonData = DataParser.readFromJson(pathToJson);
+
+        String[] jsonPath = pathToJson.split("\\\\");
+        String jsonType = jsonPath[jsonPath.length - 1];
         if (pathToJson.isEmpty()) {
             return null;
+        } else if (jsonType.contains("languages")) {
+//        } else if (jsonType.contains("languages") || jsonType.contains("Categories")) {
+            List<LanguagesJson> jsonData = JsonHandler.getLanguages();
+            for (LanguagesJson data : jsonData) {
+                InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
+                if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
+                    firstRow.add(button);
+                } else secondRow.add(button);
+            }
+        } else if (jsonType.contains("Categories")) {
+            List<LanguagesJson> jsonData = JsonHandler.getCategories(jsonType.substring(0, jsonType.length() - 15));
+            for (LanguagesJson data : jsonData) {
+                InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
+                if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
+                    firstRow.add(button);
+                } else secondRow.add(button);
+            }
         }
+        /*} else if (jsonType.equals("Questions")) {
+            for (QuestionsJson data : jsonData) {
+                InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getCategory()).setCallbackData(data.getId() + "-" + data.getCategory());
+                if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
+                    firstRow.add(button);
+                } else secondRow.add(button);
+            }
+        }*/
 
-        for (JsonParser data : jsonData) {
-            InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
-            if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
-                firstRow.add(button);
-            } else secondRow.add(button);
-        }
         inLineKeyboard.add(firstRow);
         inLineKeyboard.add(secondRow);
 
