@@ -3,11 +3,10 @@ package com.markin.bot;
 import lombok.Data;
 
 @Data
-public class LanguagesJson {
+public class TypicalJson {
 
     String id;
     String callback;
     String name;
-
 
 }

@@ -153,16 +153,16 @@ public class Bot extends TelegramLongPollingBot {
         if (pathToJson.isEmpty()) {
             return null;
         } else if (jsonType.contains("languages")) {
-            List<LanguagesJson> jsonData = JsonHandler.getLanguages();
-            for (LanguagesJson data : jsonData) {
+            List<TypicalJson> jsonData = JsonHandler.getLanguages();
+            for (TypicalJson data : jsonData) {
                 InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
                 if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
                     firstRow.add(button);
                 } else secondRow.add(button);
             }
         } else if (jsonType.contains("Categories")) {
-            List<LanguagesJson> jsonData = JsonHandler.getCategories(jsonType.substring(0, jsonType.length() - 15));
-            for (LanguagesJson data : jsonData) {
+            List<TypicalJson> jsonData = JsonHandler.getCategories(jsonType.substring(0, jsonType.length() - 15));
+            for (TypicalJson data : jsonData) {
                 InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
                 if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
                     firstRow.add(button);

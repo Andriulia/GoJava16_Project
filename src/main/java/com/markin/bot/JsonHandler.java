@@ -21,18 +21,18 @@ public class JsonHandler {
         return "src\\main\\resources\\Questions\\" + language + "Questions.json";
     }
 
-    public static List<LanguagesJson> getLanguages() {
+    public static List<TypicalJson> getLanguages() {
         try {
-            return MAPPER.readValue(new File(LANGUAGES), new TypeReference<List<LanguagesJson>>() {});
+            return MAPPER.readValue(new File(LANGUAGES), new TypeReference<List<TypicalJson>>() {});
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public static List<LanguagesJson> getCategories(String language) {
+    public static List<TypicalJson> getCategories(String language) {
         try {
-            return MAPPER.readValue(new File(categories(language)), new TypeReference<List<LanguagesJson>>() {});
+            return MAPPER.readValue(new File(categories(language)), new TypeReference<List<TypicalJson>>() {});
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
