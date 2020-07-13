@@ -39,6 +39,15 @@ public class JsonHandler {
         return null;
     }
 
+    public static String getAnswers(String language, String id) {
+        try {
+            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {}).get(Integer.parseInt(id)).getAnswer();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     public static List<QuestionsJson> getQuestionsForCategory(String language, String category) {
         try {
             List<QuestionsJson> questions = MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
