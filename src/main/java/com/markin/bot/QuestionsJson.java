@@ -3,8 +3,9 @@ package com.markin.bot;
 import lombok.Data;
 
 @Data
-public class QuestionsJson extends DefaultJson {
+public class QuestionsJson {
 
+    String id;
     String category;
     String question;
 

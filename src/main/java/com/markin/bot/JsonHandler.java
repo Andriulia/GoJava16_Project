@@ -9,9 +9,9 @@ import java.util.List;
 
 public class JsonHandler {
 
-    static ObjectMapper mapper = new ObjectMapper();
+    private final static ObjectMapper MAPPER = new ObjectMapper();
 
-    static String languages = "src\\main\\resources\\languages.json";
+    private final static String LANGUAGES = "src\\main\\resources\\languages.json";
 
     public static String categories(String language) {
         return "src\\main\\resources\\ThemesCategories\\" + language + "Categories.json";
@@ -23,7 +23,7 @@ public class JsonHandler {
 
     public static List<LanguagesJson> getLanguages() {
         try {
-            return mapper.readValue(new File(languages), new TypeReference<List<LanguagesJson>>() {});
+            return MAPPER.readValue(new File(LANGUAGES), new TypeReference<List<LanguagesJson>>() {});
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -32,7 +32,7 @@ public class JsonHandler {
 
     public static List<LanguagesJson> getCategories(String language) {
         try {
-            return mapper.readValue(new File(categories(language)), new TypeReference<List<LanguagesJson>>() {});
+            return MAPPER.readValue(new File(categories(language)), new TypeReference<List<LanguagesJson>>() {});
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -41,7 +41,7 @@ public class JsonHandler {
 
     public static List<QuestionsJson> getQuestionsForCategory(String language, String category) {
         try {
-            List<QuestionsJson> questions = mapper.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
+            List<QuestionsJson> questions = MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
             questions.removeIf(q -> !q.getCategory().equals(category));
             return questions;
         } catch (IOException e) {
@@ -49,5 +49,4 @@ public class JsonHandler {
         }
         return null;
     }
-
 }

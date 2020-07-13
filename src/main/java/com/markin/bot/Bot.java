@@ -15,8 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,28 +52,36 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void incomeCallbackHandler(Message incomeMessage, String incomeCallback) {
-        List<LanguagesJson> languagesJson = JsonHandler.getLanguages();
         String[] callback = incomeCallback.split("-");
         switch (callback[1]) {
             case "languages":
-                for (LanguagesJson data : languagesJson) {
-//            if (callback[0].equals(data.getId())) {
-                    File c = new File(JsonHandler.categories(callback[2]));
-                    if (c.exists() && !c.isDirectory()) {
-                        updateMessage(incomeMessage, "Категории " + data.getName() + ":", inLineKeyboard(JsonHandler.categories(callback[2])));
-                    } else {
-                        updateMessage(incomeMessage, "⛔", null);
-                    }
-                    break;
-                }
+                getLanguageCategories(incomeMessage, callback[2]);
+                break;
                 case "categories":
-                    if (JsonHandler.getQuestionsForCategory(callback[2], callback[3]).isEmpty()) {
-                        updateMessage(incomeMessage, "⛔", null);
-                        break;
-                    }
-                    updateMessage(incomeMessage, JsonHandler.getQuestionsForCategory(callback[2], callback[3]).get(0).getQuestion(), null);
+                    getCategoryQuestion(incomeMessage, incomeCallback);
                     break;
-//            }
+        }
+    }
+
+    private void getLanguageCategories(Message incomeMessage, String language) {
+//        List<LanguagesJson> languagesJson = JsonHandler.getLanguages();
+//        for (LanguagesJson data : languagesJson) {
+//            if (data.getCallback().contains(language))
+                try {
+                    updateMessage(incomeMessage, "Категории:"/* + data.getName() + ":"*/, inLineKeyboard(JsonHandler.categories(language)));
+                } catch (RuntimeException rte) {
+                    updateMessage(incomeMessage, "⛔", null);
+                }
+//        }
+    }
+
+    private void getCategoryQuestion(Message incomeMessage, String incomeCallback) {
+        String[] callback = incomeCallback.split("-");
+        try {
+            updateMessage(incomeMessage, JsonHandler.getQuestionsForCategory(callback[2], callback[3]).get(0).getQuestion(), null);
+        }
+        catch (RuntimeException rte) {
+            updateMessage(incomeMessage, "⛔", null);
         }
     }
 
@@ -131,7 +137,7 @@ public class Bot extends TelegramLongPollingBot {
         return replyKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup inLineKeyboard(String pathToJson) {
+    InlineKeyboardMarkup inLineKeyboard(String pathToJson) {
 
         List<List<InlineKeyboardButton>> inLineKeyboard = new ArrayList<>();
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
@@ -142,7 +148,6 @@ public class Bot extends TelegramLongPollingBot {
         if (pathToJson.isEmpty()) {
             return null;
         } else if (jsonType.contains("languages")) {
-//        } else if (jsonType.contains("languages") || jsonType.contains("Categories")) {
             List<LanguagesJson> jsonData = JsonHandler.getLanguages();
             for (LanguagesJson data : jsonData) {
                 InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
