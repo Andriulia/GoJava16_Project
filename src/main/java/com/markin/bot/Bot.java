@@ -21,7 +21,11 @@ import java.util.List;
 //@Slf4j
 public class Bot extends TelegramLongPollingBot {
 
-    private int answerId;
+    private int answerPointer;
+    private String currentCategory;
+    private String answerId;
+
+    //    private int menuPointer;
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -36,11 +40,14 @@ public class Bot extends TelegramLongPollingBot {
         String messageText = message.getText();
         switch (messageText) {
             case "/start":
+//                menuPointer = 0;
+                answerPointer = 0;
                 sendMessage(message, /*null*/ EmojiParser.parseToUnicode(":wave:"), mainKeys());
                 sendMessage(message, "Пора выбирать " + EmojiParser.parseToUnicode(":blush: :point_down:"),
                         inLineKeyboard("src\\main\\resources\\languages.json"));
                 break;
             case "/Назад":
+//                menuPointer--;
                 sendMessage(message, EmojiParser.parseToUnicode(":leftwards_arrow_with_hook:"), null);
                 break;
             case "/STOP":
@@ -57,13 +64,20 @@ public class Bot extends TelegramLongPollingBot {
         String[] callback = incomeCallback.split("-");
         switch (callback[1]) {
             case "languages":
+//                menuPointer++;
                 getLanguageCategories(incomeMessage, callback[2]);
                 break;
             case "categories":
+//                menuPointer++;
                 getCategoryQuestion(incomeMessage, incomeCallback);
                 break;
             case "answer":
                 getAnswer(incomeMessage, incomeCallback);
+                break;
+            case "next":
+                answerPointer++;
+                getCategoryQuestion(incomeMessage, incomeCallback);
+                break;
         }
     }
 
@@ -78,9 +92,11 @@ public class Bot extends TelegramLongPollingBot {
     private void getCategoryQuestion(Message incomeMessage, String incomeCallback) {
         String[] callback = incomeCallback.split("-");
         try {
-            answerId = 0;
-            updateMessage(incomeMessage, JsonHandler.getQuestionsForCategory(callback[2], callback[3]).get(answerId)
+            currentCategory = callback[3];
+            updateMessage(incomeMessage, JsonHandler.getQuestionsForCategory(callback[2], callback[3])
+                    .get(answerPointer)
                     .getQuestion(), inLineKeyboard(JsonHandler.questions(callback[2])));
+            answerId = JsonHandler.getQuestionsForCategory(callback[2], callback[3]).get(answerPointer).getId();
         } catch (RuntimeException rte) {
             updateMessage(incomeMessage, "⛔", null);
         }
@@ -88,7 +104,7 @@ public class Bot extends TelegramLongPollingBot {
 
     private void getAnswer(Message incomeMessage, String incomeCallback) {
         String[] callback = incomeCallback.split("-");
-        updateMessage(incomeMessage, JsonHandler.getAnswers(callback[2], callback[0]), null);
+        updateMessage(incomeMessage, JsonHandler.getAnswers(callback[2], answerId), null);
     }
 
     private void sendMessage(Message message, String text, ReplyKeyboard keyboard) {
@@ -155,7 +171,9 @@ public class Bot extends TelegramLongPollingBot {
         } else if (jsonType.contains("languages")) {
             List<TypicalJson> jsonData = JsonHandler.getLanguages();
             for (TypicalJson data : jsonData) {
-                InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
+                InlineKeyboardButton button = new InlineKeyboardButton()
+                        .setText(data.getName())
+                        .setCallbackData(data.getId() + "-" + data.getCallback());
                 if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
                     firstRow.add(button);
                 } else secondRow.add(button);
@@ -163,15 +181,24 @@ public class Bot extends TelegramLongPollingBot {
         } else if (jsonType.contains("Categories")) {
             List<TypicalJson> jsonData = JsonHandler.getCategories(jsonType.substring(0, jsonType.length() - 15));
             for (TypicalJson data : jsonData) {
-                InlineKeyboardButton button = new InlineKeyboardButton().setText(data.getName()).setCallbackData(data.getId() + "-" + data.getCallback());
+                InlineKeyboardButton button = new InlineKeyboardButton()
+                        .setText(data.getName())
+                        .setCallbackData(data.getId() + "-" + data.getCallback());
                 if (Integer.parseInt(data.getId()) <= jsonData.size() / 2) {
                     firstRow.add(button);
                 } else secondRow.add(button);
             }
         } else if (jsonType.contains("Questions")) {
-            InlineKeyboardButton button = new InlineKeyboardButton().setText("Ответ")
-                    .setCallbackData(answerId + "-" + "answer" + "-" + jsonType.substring(0, jsonType.length() - 14));
-            firstRow.add(button);
+            InlineKeyboardButton answerButton = new InlineKeyboardButton()
+                    .setText("Ответ")
+                    .setCallbackData(answerPointer + "-" + "answer" + "-" + jsonType.substring(0, jsonType.length() - 14));
+            firstRow.add(answerButton);
+            InlineKeyboardButton nextButton = new InlineKeyboardButton()
+                    .setText(EmojiParser.parseToUnicode(":arrow_right:"))
+                    .setCallbackData(answerPointer + "-" + "next" + "-" + jsonType.substring(0, jsonType.length() - 14) + "-"
+                            + currentCategory);
+            firstRow.add(nextButton);
+
             /*InlineKeyboardButton topButton = new InlineKeyboardButton().setText("...")
                     .setCallbackData(...);
               secondRow.add(topButton);

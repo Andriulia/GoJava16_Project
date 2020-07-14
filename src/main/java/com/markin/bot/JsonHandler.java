@@ -41,7 +41,17 @@ public class JsonHandler {
 
     public static String getAnswers(String language, String id) {
         try {
-            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {}).get(Integer.parseInt(id)).getAnswer();
+            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {})
+                    .get(Integer.parseInt(id)-1).getAnswer();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static List<QuestionsJson> getQuestions(String language) {
+        try {
+            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
