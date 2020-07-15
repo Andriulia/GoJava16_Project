@@ -11,7 +11,7 @@ public class JsonHandler {
 
     private final static ObjectMapper MAPPER = new ObjectMapper();
 
-    private final static String LANGUAGES = "src\\main\\resources\\languages.json";
+    private final static String LANGUAGES = "src\\main/resources\\languages.json";
 
     public static String categories(String language) {
         return "src\\main\\resources\\ThemesCategories\\" + language + "Categories.json";
@@ -41,17 +41,9 @@ public class JsonHandler {
 
     public static String getAnswers(String language, String id) {
         try {
-            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {})
-                    .get(Integer.parseInt(id)-1).getAnswer();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    public static List<QuestionsJson> getQuestions(String language) {
-        try {
-            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
+            List<QuestionsJson> questionsList =
+            /*return*/ MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
+            return questionsList.get(Integer.parseInt(id)-1).getAnswer();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
