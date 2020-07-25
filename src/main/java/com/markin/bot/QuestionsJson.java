@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class QuestionsJson {
 
-    String id;
-    String category;
-    String question;
-    String answer;
+    private String id;
+    private String callback;
+    private String question;
+    private String answer;
 
 }

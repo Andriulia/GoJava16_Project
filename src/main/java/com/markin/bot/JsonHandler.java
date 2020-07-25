@@ -11,7 +11,7 @@ public class JsonHandler {
 
     private final static ObjectMapper MAPPER = new ObjectMapper();
 
-    private final static String LANGUAGES = "src\\main\\resources\\languages.json";
+    public final static String LANGUAGES = "src\\main\\resources\\languages.json";
 
     public static String categories(String language) {
         return "src\\main\\resources\\ThemesCategories\\" + language + "Categories.json";
@@ -23,7 +23,8 @@ public class JsonHandler {
 
     public static List<TypicalJson> getLanguages() {
         try {
-            return MAPPER.readValue(new File(LANGUAGES), new TypeReference<List<TypicalJson>>() {});
+            return MAPPER.readValue(new File(LANGUAGES), new TypeReference<List<TypicalJson>>() {
+            });
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -32,7 +33,8 @@ public class JsonHandler {
 
     public static List<TypicalJson> getCategories(String language) {
         try {
-            return MAPPER.readValue(new File(categories(language)), new TypeReference<List<TypicalJson>>() {});
+            return MAPPER.readValue(new File(categories(language)), new TypeReference<List<TypicalJson>>() {
+            });
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -41,27 +43,22 @@ public class JsonHandler {
 
     public static String getAnswers(String language, String id) {
         try {
-            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {})
-                    .get(Integer.parseInt(id)-1).getAnswer();
+            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {
+            })
+                    .get(Integer.parseInt(id) - 1).getAnswer();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public static List<QuestionsJson> getQuestions(String language) {
+    public static List<QuestionsJson> getQuestionsForCategory(String incomeCallback) {
+        String[] callback = incomeCallback.split("-");
         try {
-            return MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
+            List<QuestionsJson> questions = MAPPER.readValue(new File(questions(callback[2])), new TypeReference<List<QuestionsJson>>() {
+            });
+            questions.removeIf(q -> !q.getCallback().split("-")[2].equals(callback[3]));
 
-    public static List<QuestionsJson> getQuestionsForCategory(String language, String category) {
-        try {
-            List<QuestionsJson> questions = MAPPER.readValue(new File(questions(language)), new TypeReference<List<QuestionsJson>>() {});
-            questions.removeIf(q -> !q.getCategory().equals(category));
             return questions;
         } catch (IOException e) {
             System.out.println(e.getMessage());

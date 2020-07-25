@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class TypicalJson {
 
-    String id;
-    String callback;
-    String name;
+    private String id;
+    private String callback;
+    private String name;
 
 }
